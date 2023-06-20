@@ -1,0 +1,50 @@
+{
+  "name": "luggage-feature-checkin",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/luggage/feature-checkin/src",
+  "prefix": "luggage",
+  "tags": ["domain:luggage", "type:feature"],
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/angular:ng-packagr-lite",
+      "outputs": ["{workspaceRoot}/dist/{projectRoot}"],
+      "options": {
+        "project": "libs/luggage/feature-checkin/ng-package.json"
+      },
+      "configurations": {
+        "production": {
+          "tsConfig": "libs/luggage/feature-checkin/tsconfig.lib.prod.json"
+        },
+        "development": {
+          "tsConfig": "libs/luggage/feature-checkin/tsconfig.lib.json"
+        }
+      },
+      "defaultConfiguration": "production"
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/luggage/feature-checkin/jest.config.ts",
+        "passWithNoTests": true
+      },
+      "configurations": {
+        "ci": {
+          "ci": true,
+          "codeCoverage": true
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "libs/luggage/feature-checkin/**/*.ts",
+          "libs/luggage/feature-checkin/**/*.html"
+        ]
+      }
+    }
+  }
+}
