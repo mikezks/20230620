@@ -4,11 +4,15 @@ import { FlightEditComponent } from './flight-edit/flight-edit.component';
 import { FlightSearchComponent } from './flight-search/flight-search.component';
 import { PassengerSearchComponent } from './passenger-search/passenger-search.component';
 import { FlightLookupComponent } from './flight-lookup/flight-lookup.component';
+import { provideTicketsFeature } from '@flight-demo/tickets/domain';
 
 export const FLIGHT_BOOKING_ROUTES: Routes = [
   {
     path: '',
     component: FlightBookingComponent,
+    providers: [
+      provideTicketsFeature()
+    ],
     children: [
       {
         path: 'flight-lookup',
