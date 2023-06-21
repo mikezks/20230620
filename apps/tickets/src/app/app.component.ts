@@ -3,6 +3,7 @@ import { RouterOutlet } from '@angular/router';
 import { ConfigService } from '@flight-demo/shared/util-config';
 import { NavbarComponent } from './navbar/navbar.component';
 import { SidebarComponent } from './sidebar/sidebar.component';
+import { AuthService } from '@flight-demo/shared/util-auth';
 
 @Component({
   standalone: true,
@@ -15,10 +16,12 @@ export class AppComponent {
   title = 'Hello World!';
 
   configService = inject(ConfigService);
+  authService = inject(AuthService);
 
   constructor() {
     // TODO: In a later lab, we will assure that
     //  loading did happen _before_ we use the config!
     this.configService.loadConfig();
+    this.authService.login('Max');
   }
 }

@@ -25,11 +25,7 @@ export const APP_ROUTES: Routes = [
     children: [
       {
         path: 'checkin',
-        loadComponent: () => loadRemoteModule({
-          type: 'manifest',
-          remoteName: 'checkin',
-          exposedModule: './Component'
-        })
+        loadComponent: () => loadRemoteModule('checkin', './Component')
       },
       {
         path: 'flight-booking',
