@@ -19,7 +19,7 @@ import { FlightService } from '../infrastructure/flight.service';
 
 @Injectable({ providedIn: 'root' })
 export class FlightLookupFacade {
-  flightService = inject(FlightService);
+  private flightService = inject(FlightService);
 
   // Source
   private input$ = new BehaviorSubject<string>('');
@@ -33,7 +33,7 @@ export class FlightLookupFacade {
 
   readonly online$ = interval(2000).pipe(
     startWith(-1),
-    // tap((v) => console.log('counter', v)),
+    tap((v) => console.log('counter', v)),
     map(() => Math.random() < 0.5),
     distinctUntilChanged(),
     shareReplay({ bufferSize: 1, refCount: true })
@@ -48,6 +48,16 @@ export class FlightLookupFacade {
     switchMap((combined) => this.load(combined.input)),
     tap(() => this.loadingSubject.next(false))
   );
+
+  /**
+   * Result: Flight[]
+   * Complex result: {
+   *  loading: boolean;
+   *  value: Flight[];
+   *  online: boolean;
+   *  error: unknown
+   * }
+   */
 
   private load(filter: string): Observable<Flight[]> {
     if (!filter) {
