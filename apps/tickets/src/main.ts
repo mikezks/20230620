@@ -20,7 +20,7 @@ bootstrapApplication(AppComponent, {
   providers: [
     provideHttpClient(),
     provideRouter(APP_ROUTES,
-      // withPreloading(PreloadAllModules)
+      withPreloading(PreloadAllModules)
     ),
     importProvidersFrom(MatDialogModule),
     importProvidersFrom(MatSnackBarModule),
