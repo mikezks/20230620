@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { Flight, FlightLookupFacade, FlightService } from '@flight-demo/tickets/domain';
-import { catchError, combineLatest, debounceTime, delay, filter, iif, map, merge, Observable, of, startWith, Subject, switchMap, takeUntil } from 'rxjs';
+import { buffer, bufferCount, catchError, combineLatest, concat, debounceTime, delay, filter, iif, map, merge, Observable, of, pairwise, scan, startWith, Subject, switchMap, takeUntil, tap } from 'rxjs';
 
 
 interface LookupViewModel {
@@ -54,53 +54,43 @@ export class FlightLookupComponent implements OnInit, OnDestroy {
   private flightService = inject(FlightService);
 
   private initComplexState(): Observable<LookupViewModel> {
+    const initialState: LookupViewModel = {
+      flights: [],
+      online: true,
+      loading: false,
+      error: undefined
+    };
+
     return combineLatest({
       input: this.from$,
       online: this.facade.online$
     }).pipe(
-      switchMap(state => merge(
-        // Loading State
-        of({
-          flights: [],
-          online: state.online,
-          loading: true,
-          error: undefined
-        }),
+      switchMap(state =>
         iif(
           () => state.online,
           this.flightService.find(state.input, '').pipe(
             delay(1_000),
             // Loading Success State
-            map(flights => ({
-              flights,
-              online: state.online,
-              loading: false,
-              error: undefined
-            })),
+            map(flights => ({ flights })),
             // Loading Error State
-            catchError(err => of({
-              flights: [],
-              online: state.online,
-              loading: false,
-              error: err
-            }))
+            catchError(err => of({ error: err })),
+            // Loading Active State
+            startWith({ loading: true })
           ),
           // Offline State
-          of({
-            flights: [],
-            online: state.online,
-            loading: false,
-            error: undefined
-          })
+          of({})
+        ).pipe(
+          map(innerState => ({
+            ...innerState, online: state.online
+          }) as LookupViewModel)
         )
-      )),
-      // Initial State
-      startWith({
-        flights: [],
-        online: true,
-        loading: false,
-        error: undefined
-      })
+      ),
+      scan((prev, state) => ({
+        ...prev, ...state,
+        // Loading Done State
+        loading: state.loading ? true : false
+      })),
+      startWith(initialState)
     );
   }
 
