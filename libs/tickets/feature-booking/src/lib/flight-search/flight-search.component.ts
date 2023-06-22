@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, Injector, computed, effect, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { CityPipe } from '@flight-demo/shared/ui-common';
-import { Flight, injectTicketsFacade, ticketsActions, ticketsFeature } from '@flight-demo/tickets/domain';
-import { Store } from '@ngrx/store';
+import { Flight, injectTicketsFacade } from '@flight-demo/tickets/domain';
 import { FlightCardComponent } from '../flight-card/flight-card.component';
 
 @Component({
@@ -14,12 +14,18 @@ import { FlightCardComponent } from '../flight-card/flight-card.component';
   imports: [CommonModule, FormsModule, CityPipe, FlightCardComponent],
 })
 export class FlightSearchComponent {
-  private store = inject(Store);
-
-  from = 'London';
-  to = 'New York';
-  // flights$ = this.store.select(ticketsFeature.selectActiveUserFlights);
   ticketsFacade = injectTicketsFacade();
+  injector = inject(Injector);
+
+  from = signal('London', {
+    equal: (a, b) => a === b
+  });
+  to = signal('New York');
+  flights = toSignal(this.ticketsFacade.flights$, {
+    requireSync: true
+  });
+  flightInfo = computed(() => `From ${ this.from() } to ${ this.to() }.`)
+
   selectedFlight: Flight | undefined;
 
   basket: Record<number, boolean> = {
@@ -27,7 +33,18 @@ export class FlightSearchComponent {
     5: true,
   };
 
+  constructor() {
+
+    this.from.set('Wien');
+    this.to.set('Frankfurt');
+
+    console.log(this.from());
+  }
+
   search(): void {
+    effect(() => console.log(this.from(), this.to()), {
+      injector: this.injector
+    });
     if (!this.from || !this.to) {
       return;
     }
@@ -35,7 +52,7 @@ export class FlightSearchComponent {
     // Reset properties
     this.selectedFlight = undefined;
 
-    this.ticketsFacade.search(this.from, this.to);
+    this.ticketsFacade.search(this.from(), this.to());
   }
 
   select(f: Flight): void {

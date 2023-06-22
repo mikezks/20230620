@@ -94,6 +94,7 @@ export function injectTicketsFacade() {
   const store = inject(Store);
 
   return {
+    flights: store.selectSignal(ticketsFeature.selectFlights),
     flights$: store.select(ticketsFeature.selectFlights),
     search: (from: string, to: string) => store.dispatch(
       ticketsActions.flightsLoad({ from, to })
