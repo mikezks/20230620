@@ -8,7 +8,8 @@ import {
   RoundtripValidatorDirective,
   ValidationErrorsComponent,
 } from '@flight-demo/shared/util-validation';
-import { FlightService, initFlight } from '@flight-demo/tickets/domain';
+import { FlightService, initFlight, routerFeature } from '@flight-demo/tickets/domain';
+import { Store } from '@ngrx/store';
 
 @Component({
   selector: 'app-flight-edit',
@@ -26,6 +27,7 @@ import { FlightService, initFlight } from '@flight-demo/tickets/domain';
 export class FlightEditComponent implements OnInit {
   private route = inject(ActivatedRoute);
   private flightService = inject(FlightService);
+  private store = inject(Store);
 
   id = '';
   showDetails = '';
@@ -37,6 +39,8 @@ export class FlightEditComponent implements OnInit {
       this.showDetails = params.get('showDetails') ?? '';
       this.load(this.id);
     });
+
+    this.store.select(routerFeature.selectRouteParams).subscribe(console.log);
   }
 
   load(id: string): void {

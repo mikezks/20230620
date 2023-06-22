@@ -12,6 +12,7 @@ import { APP_ROUTES } from './app/app.routes';
 import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 import { provideStoreDevtools } from '@ngrx/store-devtools';
+import { provideRouterFeature } from '@flight-demo/tickets/domain';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -22,6 +23,7 @@ bootstrapApplication(AppComponent, {
     importProvidersFrom(MatDialogModule),
     provideStore(),
     provideEffects(),
-    isDevMode() ? provideStoreDevtools() : []
+    isDevMode() ? provideStoreDevtools() : [],
+    provideRouterFeature()
   ],
 });
