@@ -1,7 +1,9 @@
 import { provideHttpClient } from '@angular/common/http';
 import { importProvidersFrom, isDevMode } from '@angular/core';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { bootstrapApplication } from '@angular/platform-browser';
+import { provideAnimations } from '@angular/platform-browser/animations'
 import {
   PreloadAllModules,
   provideRouter,
@@ -21,6 +23,8 @@ bootstrapApplication(AppComponent, {
       // withPreloading(PreloadAllModules)
     ),
     importProvidersFrom(MatDialogModule),
+    importProvidersFrom(MatSnackBarModule),
+    provideAnimations(),
     provideStore(),
     provideEffects(),
     isDevMode() ? provideStoreDevtools() : [],
