@@ -1,8 +1,9 @@
 import { provideEffects } from '@ngrx/effects';
-import { createFeature, createReducer, createSelector, on, provideState } from "@ngrx/store";
+import { Store, createFeature, createReducer, createSelector, on, provideState } from "@ngrx/store";
 import { Flight } from "../entities/flight";
 import { ticketsActions } from "./tickets.actions";
-import { EnvironmentProviders, makeEnvironmentProviders } from "@angular/core";
+import { EnvironmentProviders, inject, makeEnvironmentProviders } from "@angular/core";
+import { TicketsEffects } from './tickets.effects';
 
 
 export interface TicketsState {
@@ -85,6 +86,17 @@ export const ticketsFeature = createFeature({
 export function provideTicketsFeature(): EnvironmentProviders {
   return makeEnvironmentProviders([
     provideState(ticketsFeature),
-    provideEffects()
+    provideEffects(TicketsEffects)
   ]);
+}
+
+export function injectTicketsFacade() {
+  const store = inject(Store);
+
+  return {
+    flights$: store.select(ticketsFeature.selectFlights),
+    search: (from: string, to: string) => store.dispatch(
+      ticketsActions.flightsLoad({ from, to })
+    )
+  };
 }
